@@ -136,7 +136,6 @@ public abstract class SplashBaseActivity extends Activity {
 
             @Override
             public void onNoAD(AdError adError) {
-                Log.e("123", "adError : " + adError.getErrorMsg());
                 String err = adError.getErrorMsg();
                 if (!TextUtils.isEmpty(err) && err.contains("网络类型错误")) {
                     if (AdModelUtils.isSplashFirst) { // 如果是开屏优先，则无数据请求原生
@@ -204,11 +203,6 @@ public abstract class SplashBaseActivity extends Activity {
                     AdModelUtils.NativeId_Img, new NativeExpressAD.NativeExpressADListener() {
                 @Override
                 public void onNoAD(AdError adError) {
-                    Log.i(
-                            TAG,
-                            String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(),
-                                    adError.getErrorMsg()));
-
                     if (count < 3) {
                         refreshAd(count + 1);
                     } else {
@@ -222,7 +216,6 @@ public abstract class SplashBaseActivity extends Activity {
 
                 @Override
                 public void onADLoaded(List<NativeExpressADView> adList) {
-                    Log.i(TAG, "onADLoaded: " + adList.size());
                     // 释放前一个展示的NativeExpressADView的资源
                     if (nativeExpressADView != null) {
                         nativeExpressADView.destroy();
@@ -248,7 +241,6 @@ public abstract class SplashBaseActivity extends Activity {
 
                 @Override
                 public void onRenderFail(NativeExpressADView adView) {
-                    Log.i(TAG, "onRenderFail");
                     if (!AdModelUtils.isSplashFirst) {
                         QQKaiping(0);
                     } else {
@@ -258,7 +250,6 @@ public abstract class SplashBaseActivity extends Activity {
 
                 @Override
                 public void onRenderSuccess(NativeExpressADView adView) {
-                    Log.i(TAG, "onRenderSuccess");
                     if (handler == null) {
                         handler = new Handler();
                     }
@@ -290,7 +281,6 @@ public abstract class SplashBaseActivity extends Activity {
 
                 @Override
                 public void onADClosed(NativeExpressADView adView) {
-                    Log.i(TAG, "onADClosed");
                     // 当广告模板中的关闭按钮被点击时，广告将不再展示。NativeExpressADView也会被Destroy，释放资源，不可以再用来展示。
                     if (splashLayout != null && splashLayout.getChildCount() > 0) {
                         splashLayout.removeAllViews();
@@ -301,17 +291,14 @@ public abstract class SplashBaseActivity extends Activity {
 
                 @Override
                 public void onADLeftApplication(NativeExpressADView adView) {
-                    Log.i(TAG, "onADLeftApplication");
                 }
 
                 @Override
                 public void onADOpenOverlay(NativeExpressADView adView) {
-                    Log.i(TAG, "onADOpenOverlay");
                 }
 
                 @Override
                 public void onADCloseOverlay(NativeExpressADView adView) {
-                    Log.i(TAG, "onADCloseOverlay");
                 }
 
             }); // 这里的Context必须为Activity
@@ -320,9 +307,8 @@ public abstract class SplashBaseActivity extends Activity {
                     .setAutoPlayMuted(true) // 设置自动播放视频时，是否静音
                     .build()); // setVideoOption是可选的，开发者可根据需要选择是否配置
             nativeExpressAD.loadAD(1);
-        } catch (NumberFormatException e) {
-            Log.e("123", "ad size invalid.");
-            Toast.makeText(this, "请输入合法的宽高数值", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            next();
         }
     }
 
