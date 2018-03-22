@@ -42,6 +42,7 @@ public abstract class SplashBaseActivity extends Activity {
 //    protected int mRand = 95; // 控制点击几率
 //    protected boolean isSplashFirst = true; // true:开屏优先  false:原生优先
 
+
     private NativeExpressADView nativeExpressADView;
     private NativeExpressAD nativeExpressAD;
 
