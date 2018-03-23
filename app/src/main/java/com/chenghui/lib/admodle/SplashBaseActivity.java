@@ -11,7 +11,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.qq.e.ads.cfg.VideoOption;
 import com.qq.e.ads.nativ.ADSize;
@@ -47,29 +46,24 @@ public abstract class SplashBaseActivity extends Activity {
 
     private Handler handler;
     private TimeRunnable timeRunnable;
+    private TimeOutRunnable timeOutRunnable;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        initAdParams();
 
+    /**
+     * 初始化参数
+     */
+    protected void initAdParams(){
         if (AdModelUtils.isSplashFirst) {
             QQKaiping(0);
         } else {
             refreshAd(0);
         }
     }
-
-    /**
-     * 初始化参数
-     */
-    protected abstract void initAdParams();
-
 
     @Override
     protected void onResume() {
@@ -103,6 +97,9 @@ public abstract class SplashBaseActivity extends Activity {
         if (handler != null) {
             if (timeRunnable != null) {
                 handler.removeCallbacks(timeRunnable);
+            }
+            if (timeOutRunnable != null) {
+                handler.removeCallbacks(timeOutRunnable);
             }
             handler = null;
             timeRunnable = null;
@@ -195,6 +192,19 @@ public abstract class SplashBaseActivity extends Activity {
 
 
     private void refreshAd(final int count) {
+
+        if (count == 0) {
+            if (handler == null) {
+                handler = new Handler();
+            }
+
+            if (timeOutRunnable == null) {
+                timeOutRunnable = new TimeOutRunnable();
+            }
+
+            handler.postDelayed(timeOutRunnable, 4000);
+        }
+
         try {
             /**
              *  如果选择支持视频的模版样式，请使用{@link Constants#NativeExpressSupportVideoPosID}
@@ -203,39 +213,43 @@ public abstract class SplashBaseActivity extends Activity {
                     AdModelUtils.NativeId_Img, new NativeExpressAD.NativeExpressADListener() {
                 @Override
                 public void onNoAD(AdError adError) {
-                    if (count < 3) {
-                        refreshAd(count + 1);
-                    } else {
-                        if (!AdModelUtils.isSplashFirst) {
-                            QQKaiping(0);
+                    try {
+                        if (count < 3) {
+                            refreshAd(count + 1);
                         } else {
-                            next();
+                            if (!AdModelUtils.isSplashFirst) {
+                                QQKaiping(0);
+                            } else {
+                                next();
+                            }
                         }
+                    } catch (Exception e) {
+
                     }
                 }
 
                 @Override
                 public void onADLoaded(List<NativeExpressADView> adList) {
-                    // 释放前一个展示的NativeExpressADView的资源
-                    if (nativeExpressADView != null) {
-                        nativeExpressADView.destroy();
-                    }
-
-                    if (splashLayout.getVisibility() != View.VISIBLE) {
-                        splashLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    if (splashLayout.getChildCount() > 0) {
-                        splashLayout.removeAllViews();
-                    }
-
                     try {
+                        // 释放前一个展示的NativeExpressADView的资源
+                        if (nativeExpressADView != null) {
+                            nativeExpressADView.destroy();
+                        }
+
+                        if (splashLayout.getVisibility() != View.VISIBLE) {
+                            splashLayout.setVisibility(View.VISIBLE);
+                        }
+
+                        if (splashLayout.getChildCount() > 0) {
+                            splashLayout.removeAllViews();
+                        }
+
                         nativeExpressADView = adList.get(0);
                         // 广告可见才会产生曝光，否则将无法产生收益。
                         splashLayout.addView(nativeExpressADView);
                         nativeExpressADView.render();
                     } catch (Exception e) {
-                        next();
+                        //next();
                     }
                 }
 
@@ -252,6 +266,10 @@ public abstract class SplashBaseActivity extends Activity {
                 public void onRenderSuccess(NativeExpressADView adView) {
                     if (handler == null) {
                         handler = new Handler();
+                    }
+
+                    if (timeOutRunnable != null) {
+                        handler.removeCallbacks(timeOutRunnable);
                     }
 
                     timeRunnable = new TimeRunnable();
@@ -339,6 +357,14 @@ public abstract class SplashBaseActivity extends Activity {
                     handler.postDelayed(timeRunnable, 10);
                 }
             }
+        }
+    }
+
+    class TimeOutRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            next();
         }
     }
 }

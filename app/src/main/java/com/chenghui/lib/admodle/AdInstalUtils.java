@@ -2,6 +2,7 @@ package com.chenghui.lib.admodle;
 
 import android.app.Activity;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.chenghui.study.sdk.interfaces.AdViewInstlListener;
@@ -14,6 +15,7 @@ import com.qq.e.ads.nativ.NativeExpressAD;
 import com.qq.e.ads.nativ.NativeExpressADView;
 import com.qq.e.comm.util.AdError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -37,11 +39,21 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     public AdInstalUtils(Activity activity) {
         this.activity = activity;
-        String[] strId = new String[]{AdModelUtils.NativeId_Img, AdModelUtils.NativeId_img_txt, AdModelUtils.NativeId_txt_img};
-        int i = new Random().nextInt(strId.length);
-        nativeId = strId[i];
 
-        if (i == 0) {
+        ArrayList<String> list = new ArrayList<>();
+        if (!TextUtils.isEmpty(AdModelUtils.NativeId_Img)) {
+            list.add(AdModelUtils.NativeId_Img);
+        }
+        if (!TextUtils.isEmpty(AdModelUtils.NativeId_img_txt)) {
+            list.add(AdModelUtils.NativeId_img_txt);
+        }
+        if (!TextUtils.isEmpty(AdModelUtils.NativeId_txt_img)) {
+            list.add(AdModelUtils.NativeId_txt_img);
+        }
+        int i = new Random().nextInt(list.size());
+        nativeId = list.get(i);
+
+        if (nativeId.equals(AdModelUtils.NativeId_Img)) {
             isShowClosedBtn = true;
         }
     }
@@ -67,7 +79,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onNoAD(AdError adError) {
-        Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+        //Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
 
         if (count < 2) {
             refreshAd(count + 1);
@@ -78,19 +90,19 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADLoaded(List<NativeExpressADView> adList) {
-        Log.i(TAG, "onADLoaded: " + adList.size());
-        // 释放前一个展示的NativeExpressADView的资源
-        if (nativeExpressADView != null) {
-            nativeExpressADView.destroy();
-        }
-
-        if (dialog == null) {
-            dialog = new InstlDialog(activity, isShowClosedBtn);
-        }
-
-        dialog.show();
-
         try {
+            //Log.i(TAG, "onADLoaded: " + adList.size());
+            // 释放前一个展示的NativeExpressADView的资源
+            if (nativeExpressADView != null) {
+                nativeExpressADView.destroy();
+            }
+
+            if (dialog == null) {
+                dialog = new InstlDialog(activity, isShowClosedBtn);
+            }
+
+            dialog.show();
+
             nativeExpressADView = adList.get(0);
             // 广告可见才会产生曝光，否则将无法产生收益。
             dialog.setNativeAd(nativeExpressADView);
@@ -102,7 +114,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onRenderFail(NativeExpressADView adView) {
-        Log.i(TAG, "onRenderFail");
+        //Log.i(TAG, "onRenderFail");
         if (dialog != null) {
             dialog.dismiss();
         }
@@ -111,7 +123,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onRenderSuccess(NativeExpressADView adView) {
-        Log.i(TAG, "onRenderSuccess");
+        //Log.i(TAG, "onRenderSuccess");
         if (dialog != null) {
             dialog.show();
         }
@@ -129,7 +141,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADClosed(NativeExpressADView adView) {
-        Log.i(TAG, "onADClosed");
+        //Log.i(TAG, "onADClosed");
         // 当广告模板中的关闭按钮被点击时，广告将不再展示。NativeExpressADView也会被Destroy，释放资源，不可以再用来展示。
         if (dialog != null) {
             dialog.dismiss();
@@ -138,7 +150,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADLeftApplication(NativeExpressADView adView) {
-        Log.i(TAG, "onADLeftApplication");
+        //Log.i(TAG, "onADLeftApplication");
     }
 
     @Override

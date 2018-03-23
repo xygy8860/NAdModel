@@ -29,13 +29,4 @@ public class AdModelUtils {
     //    public static String SDK_KEY = "SDK20170014120225l4da2ffsad5b8vv";
     public static String SDK_KEY = "";
 
-    public static void init(String appid, String splashID, String nativeId, String bannerPosID, String instalPosID, String adviewKey) {
-        APPID = appid;
-        SplashID = splashID;
-        NativeId_Img = nativeId;
-        BannerPosID = bannerPosID;
-        InstalPosID = instalPosID;
-        SDK_KEY = adviewKey;
-    }
-
 }

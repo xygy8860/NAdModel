@@ -1,6 +1,7 @@
 package com.chenghui.lib.admodle;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.qq.e.ads.nativ.NativeExpressAD;
 import com.qq.e.ads.nativ.NativeExpressADView;
 import com.qq.e.comm.util.AdError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -32,9 +34,15 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
     public AdNativeUtils(Activity activity, ViewGroup layout) {
         this.activity = activity;
         this.layout = layout;
-        String[] strId = new String[]{AdModelUtils.NativeId_img_txt, AdModelUtils.NativeId_txt_img};
-        int i = new Random().nextInt(strId.length);
-        nativeId = strId[i];
+        ArrayList<String> list = new ArrayList<>();
+        if (!TextUtils.isEmpty(AdModelUtils.NativeId_img_txt)) {
+            list.add(AdModelUtils.NativeId_img_txt);
+        }
+        if (!TextUtils.isEmpty(AdModelUtils.NativeId_txt_img)) {
+            list.add(AdModelUtils.NativeId_txt_img);
+        }
+        int i = new Random().nextInt(list.size());
+        nativeId = list.get(i);
         refreshAd(0);
     }
 
@@ -59,7 +67,7 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onNoAD(AdError adError) {
-        Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+        //Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
 
         if (count < 2) {
             refreshAd(count + 1);
@@ -68,13 +76,13 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADLoaded(List<NativeExpressADView> adList) {
-        Log.i(TAG, "onADLoaded: " + adList.size());
-        // 释放前一个展示的NativeExpressADView的资源
-        if (nativeExpressADView != null) {
-            nativeExpressADView.destroy();
-        }
-
         try {
+            //Log.i(TAG, "onADLoaded: " + adList.size());
+            // 释放前一个展示的NativeExpressADView的资源
+            if (nativeExpressADView != null) {
+                nativeExpressADView.destroy();
+            }
+
             if (layout.getVisibility() != View.VISIBLE) {
                 layout.setVisibility(View.VISIBLE);
             }
@@ -114,7 +122,7 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADClosed(NativeExpressADView adView) {
-        Log.i(TAG, "onADClosed");
+        //Log.i(TAG, "onADClosed");
         // 当广告模板中的关闭按钮被点击时，广告将不再展示。NativeExpressADView也会被Destroy，释放资源，不可以再用来展示。
         if (layout != null && layout.getChildCount() > 0) {
             layout.removeAllViews();
@@ -124,17 +132,17 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADLeftApplication(NativeExpressADView adView) {
-        Log.i(TAG, "onADLeftApplication");
+        //Log.i(TAG, "onADLeftApplication");
     }
 
     @Override
     public void onADOpenOverlay(NativeExpressADView adView) {
-        Log.i(TAG, "onADOpenOverlay");
+        //Log.i(TAG, "onADOpenOverlay");
     }
 
     @Override
     public void onADCloseOverlay(NativeExpressADView adView) {
-        Log.i(TAG, "onADCloseOverlay");
+        //Log.i(TAG, "onADCloseOverlay");
     }
 
 
