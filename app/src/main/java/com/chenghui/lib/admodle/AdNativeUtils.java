@@ -31,6 +31,8 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
     private String nativeId;
     private ViewGroup layout;
 
+    private OnSuccessListener listener;
+
     public AdNativeUtils(Activity activity, ViewGroup layout) {
         this.activity = activity;
         this.layout = layout;
@@ -46,6 +48,15 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
         }
         int i = new Random().nextInt(list.size());
         nativeId = list.get(i);
+        refreshAd(0);
+    }
+
+    public AdNativeUtils(Activity activity, ViewGroup layout, OnSuccessListener listener) {
+        this.activity = activity;
+        this.layout = layout;
+        this.listener = listener;
+
+        nativeId = AdModelUtils.NativeId_Horizontal_Img;
         refreshAd(0);
     }
 
@@ -111,6 +122,9 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
     @Override
     public void onRenderSuccess(NativeExpressADView adView) {
         Log.i(TAG, "onRenderSuccess");
+        if (listener != null) {
+            listener.success();
+        }
     }
 
     @Override
@@ -153,6 +167,10 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
         if (nativeExpressADView != null) {
             nativeExpressADView.destroy();
         }
+    }
+
+    public interface OnSuccessListener {
+        void success();
     }
 
 }

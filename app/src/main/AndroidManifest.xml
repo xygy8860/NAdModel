@@ -13,8 +13,6 @@
             </intent-filter>
         </activity>-->
 
-        <!--<activity android:name=".MainActivity" />-->
-
         <!-- 声明SDK所需要的组件 -->
         <service
             android:name="com.qq.e.comm.DownloadService"
