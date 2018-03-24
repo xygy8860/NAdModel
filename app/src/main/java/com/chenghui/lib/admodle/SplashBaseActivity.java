@@ -168,7 +168,7 @@ public abstract class SplashBaseActivity extends Activity {
         }, 0);
     }
 
-    private void splash() {
+    protected void splash() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -182,7 +182,7 @@ public abstract class SplashBaseActivity extends Activity {
         }).start();
     }
 
-    private void next() {
+    protected void next() {
         if (canJump) {
             openMainActivity();
         } else {
