@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,6 +30,7 @@ public abstract class AdCarouselFragment extends Fragment {
     private AdmodelFragmentAdapter mAdapter;
     protected ArrayList<Fragment> data;
     private AdCountTimer timer;
+    private LinearLayout mLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,9 +46,13 @@ public abstract class AdCarouselFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewPager = (ViewPager) view.findViewById(R.id.admodel_carousel_fragment_viewpager);
+        mLayout = (LinearLayout) view.findViewById(R.id.admodel_carousel_fragment_layout);
+
         mAdapter = new AdmodelFragmentAdapter(getChildFragmentManager());
-        mAdapter.setData(initData());
+        data = initData();
+        mAdapter.setData(data);
         mViewPager.setAdapter(mAdapter);
+        initLayout();
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -54,9 +61,15 @@ public abstract class AdCarouselFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
+                if (position > 0) {
+                    mViewPager.setOffscreenPageLimit(2);
+                }
+
+                changeIndicator(position);
                 if (timer == null) {
                     timer = new AdCountTimer(3000, 3000);
                     timer.mViewPager = mViewPager;
+                    timer.size = data.size();
                 } else {
                     timer.cancel();
                 }
@@ -71,6 +84,31 @@ public abstract class AdCarouselFragment extends Fragment {
 
             }
         });
+    }
+
+    /**
+     * 初始化指示器
+     */
+    private void initLayout() {
+        for (int i = 0; i < data.size(); i++) {
+            ImageView imageView = (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.admodel_carousel_fragment_img, mLayout, false);
+            if (i == 0) {
+                imageView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            }
+            mLayout.addView(imageView);
+        }
+    }
+
+    private void changeIndicator(int position) {
+        for (int i = 0; i < mLayout.getChildCount(); i++) {
+            ImageView imageView = (ImageView) mLayout.getChildAt(i);
+
+            if (position == i) {
+                imageView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            } else {
+                imageView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -90,13 +128,18 @@ public abstract class AdCarouselFragment extends Fragment {
     public abstract ArrayList<Fragment> initData();
 
     public static class EntityPager {
+        public int position;
 
+        public EntityPager(int position) {
+            this.position = position;
+        }
     }
 
     public static class AdCountTimer extends CountDownTimer {
 
         public int position;
         public ViewPager mViewPager;
+        public int size; // 总图片数
 
         public AdCountTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
@@ -109,10 +152,10 @@ public abstract class AdCarouselFragment extends Fragment {
 
         @Override
         public void onFinish() {
-            if (position == 0) {
-                mViewPager.setCurrentItem(1);
-            } else {
+            if (position == size - 1) {
                 mViewPager.setCurrentItem(0);
+            } else {
+                mViewPager.setCurrentItem(position + 1);
             }
         }
     }

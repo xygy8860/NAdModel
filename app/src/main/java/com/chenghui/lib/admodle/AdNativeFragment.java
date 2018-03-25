@@ -15,6 +15,16 @@ import org.greenrobot.eventbus.EventBus;
 
 public class AdNativeFragment extends Fragment {
 
+    public static final String TAG_POSITION = "position";
+
+    public static AdNativeFragment initAdNativeFragment(int position) {
+        AdNativeFragment fragment = new AdNativeFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(TAG_POSITION, position);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     private View view;
     private AdNativeUtils adNativeUtils;
 
@@ -37,7 +47,13 @@ public class AdNativeFragment extends Fragment {
             adNativeUtils = new AdNativeUtils(getActivity(), (ViewGroup) view, new AdNativeUtils.OnSuccessListener() {
                 @Override
                 public void success() {
-                    EventBus.getDefault().post(new AdCarouselFragment.EntityPager());
+
+                    int position = 1;
+                    if (getArguments() != null) {
+                        position = getArguments().getInt("position", 1);
+                    }
+
+                    EventBus.getDefault().post(new AdCarouselFragment.EntityPager(position));
                 }
             });
         }

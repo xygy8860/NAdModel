@@ -16,7 +16,8 @@ public class AdFragment extends AdCarouselFragment {
     public ArrayList<Fragment> initData() {
         ArrayList<Fragment> list = new ArrayList<>();
         list.add(new TestFragment());
-        list.add(new AdNativeFragment());
+        list.add(AdNativeFragment.initAdNativeFragment(1));
+        list.add(AdNativeFragment.initAdNativeFragment(2));
         return list;
     }
 }
