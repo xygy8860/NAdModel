@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public abstract class AdCarouselFragment extends Fragment {
 
     protected static final String TAG_IS_CAROUSEL = "isCarousel";
+    protected static final String TAG_HEIGHT = "height";
 
     private View view;
     private ViewPager mViewPager;
@@ -38,7 +39,12 @@ public abstract class AdCarouselFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.admodel_carousel_fragment, container, false);
-            view.getLayoutParams().height = getWidth() * 720 / 1280;
+
+            int height = 0;
+            if (getArguments() != null) {
+                height = getArguments().getInt(TAG_HEIGHT, getWidth() * 720 / 1280);
+            }
+            view.getLayoutParams().height = height;
         }
         EventBus.getDefault().register(this);
         return view;

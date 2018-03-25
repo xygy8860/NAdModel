@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.hello).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdInstalUtils adInstalUtils = new AdInstalUtils(MainActivity.this);
+                AdInstalUtils adInstalUtils = new AdInstalUtils(MainActivity.this,100);
                 adInstalUtils.refreshAd(0);
             }
         });
