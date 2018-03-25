@@ -1,5 +1,6 @@
 package com.chenghui.admodel.test;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.chenghui.lib.admodle.AdCarouselFragment;
@@ -12,6 +13,14 @@ import java.util.ArrayList;
  */
 
 public class AdFragment extends AdCarouselFragment {
+
+    public static AdFragment getAdFragment(boolean isCarousel) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TAG_IS_CAROUSEL, isCarousel);
+        AdFragment fragment = new AdFragment();
+        return fragment;
+    }
+
     @Override
     public ArrayList<Fragment> initData() {
         ArrayList<Fragment> list = new ArrayList<>();

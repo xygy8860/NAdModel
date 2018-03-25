@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 public abstract class AdCarouselFragment extends Fragment {
 
+    protected static final String TAG_IS_CAROUSEL = "isCarousel";
+
     private View view;
     private ViewPager mViewPager;
     private AdmodelFragmentAdapter mAdapter;
@@ -66,18 +68,25 @@ public abstract class AdCarouselFragment extends Fragment {
                 }
 
                 changeIndicator(position);
-                if (timer == null) {
-                    timer = new AdCountTimer(3000, 3000);
-                    timer.mViewPager = mViewPager;
-                    timer.size = data.size();
-                } else {
-                    timer.cancel();
+
+                boolean isCarousel = false;
+                if (getArguments() != null) {
+                    isCarousel = getArguments().getBoolean(TAG_IS_CAROUSEL, false);
                 }
 
-                timer.position = position;
-                timer.start();
-            }
+                if (isCarousel) {
+                    if (timer == null) {
+                        timer = new AdCountTimer(3000, 3000);
+                        timer.mViewPager = mViewPager;
+                        timer.size = data.size();
+                    } else {
+                        timer.cancel();
+                    }
 
+                    timer.position = position;
+                    timer.start();
+                }
+            }
 
             @Override
             public void onPageScrollStateChanged(int state) {
