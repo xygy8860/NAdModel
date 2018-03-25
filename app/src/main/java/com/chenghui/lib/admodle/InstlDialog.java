@@ -8,6 +8,8 @@ import android.widget.RelativeLayout;
 
 import com.qq.e.ads.nativ.NativeExpressADView;
 
+import java.util.Random;
+
 /**
  * @author xygy
  * @version 2016-3-17 下午8:31:43
@@ -19,9 +21,15 @@ public class InstlDialog {
     private AlertDialog dialog;
     private RelativeLayout layout;
     private ImageView close;
+    private int mRand = 5; // 点击几率
 
     public InstlDialog(Activity context, boolean isShowClosedBtn) {
+        this(context, isShowClosedBtn, 5);
+    }
+
+    public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand) {
         this.context = context;
+        this.mRand = mRand;
 
         dialog = new AlertDialog.Builder(context, R.style.admodel_dialog).create();
         dialog.show();
@@ -34,12 +42,9 @@ public class InstlDialog {
 
         if (isShowClosedBtn) {
             close.setVisibility(View.VISIBLE);
-            close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+            if (new Random().nextInt(100) > mRand) {
+                setCloseListener();
+            }
         }
     }
 
@@ -53,6 +58,15 @@ public class InstlDialog {
         }
 
         layout.addView(nativeExpressADView);
+    }
+
+    public void setCloseListener() {
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
     }
 
     public void dismiss() {

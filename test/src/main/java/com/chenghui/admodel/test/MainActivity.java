@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
+import com.chenghui.lib.admodle.AdInstalUtils;
 import com.chenghui.lib.admodle.AdModelUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +27,14 @@ public class MainActivity extends AppCompatActivity {
         tr.replace(R.id.fragment, AdFragment.getAdFragment(false));
         tr.commitAllowingStateLoss();
         ft.executePendingTransactions();
+
+        findViewById(R.id.hello).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AdInstalUtils adInstalUtils = new AdInstalUtils(MainActivity.this);
+                adInstalUtils.refreshAd(0);
+            }
+        });
 
     }
 }

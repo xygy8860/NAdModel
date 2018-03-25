@@ -36,6 +36,12 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     private String nativeId;
     private boolean isShowClosedBtn;
+    private int mRand = 5;
+
+    public AdInstalUtils(Activity activity, int mRand) {
+        this(activity);
+        this.mRand = mRand;
+    }
 
     public AdInstalUtils(Activity activity) {
         this.activity = activity;
@@ -101,7 +107,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
             }
 
             if (dialog == null) {
-                dialog = new InstlDialog(activity, isShowClosedBtn);
+                dialog = new InstlDialog(activity, isShowClosedBtn, mRand);
             }
 
             dialog.show();
@@ -140,6 +146,9 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     @Override
     public void onADClicked(NativeExpressADView adView) {
         Log.i(TAG, "onADClicked");
+        if (dialog != null) {
+            dialog.setCloseListener();
+        }
     }
 
     @Override
