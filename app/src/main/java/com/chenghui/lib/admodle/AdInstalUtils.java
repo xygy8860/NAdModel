@@ -43,13 +43,22 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         this.mRand = mRand;
     }
 
+    public AdInstalUtils(Activity activity, String nativeId) {
+        this.activity = activity;
+        this.nativeId = nativeId;
+
+        if (nativeId.equals(AdModelUtils.NativeId_Img) || nativeId.equals(AdModelUtils.NativeId_Horizontal_Img)) {
+            isShowClosedBtn = true;
+        }
+    }
+
     public AdInstalUtils(Activity activity) {
         this.activity = activity;
 
         ArrayList<String> list = new ArrayList<>();
-        if (!TextUtils.isEmpty(AdModelUtils.NativeId_Img) && !"1".equals(AdModelUtils.NativeId_Img)) {
+        /*if (!TextUtils.isEmpty(AdModelUtils.NativeId_Img) && !"1".equals(AdModelUtils.NativeId_Img)) {
             list.add(AdModelUtils.NativeId_Img);
-        }
+        }*/
         if (!TextUtils.isEmpty(AdModelUtils.NativeId_img_txt) && !"1".equals(AdModelUtils.NativeId_img_txt)) {
             list.add(AdModelUtils.NativeId_img_txt);
         }
