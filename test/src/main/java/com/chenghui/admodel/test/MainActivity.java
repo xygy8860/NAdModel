@@ -11,6 +11,8 @@ import com.chenghui.lib.admodle.AdModelUtils;
 
 public class MainActivity extends AppCompatActivity {
 
+    private AdInstalUtils adInstalUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,10 +33,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.hello).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdInstalUtils adInstalUtils = new AdInstalUtils(MainActivity.this, AdModelUtils.NativeId_Img);
+                adInstalUtils = new AdInstalUtils(MainActivity.this, AdModelUtils.NativeId_Img);
                 adInstalUtils.refreshAd(0);
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(adInstalUtils != null){
+            adInstalUtils.ondetory();
+        }
     }
 }

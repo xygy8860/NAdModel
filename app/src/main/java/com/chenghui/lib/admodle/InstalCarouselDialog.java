@@ -75,7 +75,7 @@ public class InstalCarouselDialog {
 
             @Override
             public void onPageSelected(int position) {
-                changePostion(position, 2000);
+                changePostion(position, 3000);
             }
 
             @Override
@@ -85,6 +85,7 @@ public class InstalCarouselDialog {
         });
     }
 
+    // 设置定时器 刷新
     private void changePostion(int position, int time) {
         Log.e("123", "position:" + position);
 
@@ -94,21 +95,22 @@ public class InstalCarouselDialog {
 
         changeIndicator(position);
 
-        if (timer == null) {
-            timer = new AdCarouselFragment.AdCountTimer(time, time);
-            timer.mViewPager = mViewPager;
-            timer.size = mAdapter.getCount();
-        } else {
+        if (timer != null) {
             timer.cancel();
+            timer = null;
         }
 
+        timer = new AdCarouselFragment.AdCountTimer(time, time);
+        timer.mViewPager = mViewPager;
+        timer.size = mAdapter.getCount();
         timer.position = position;
         timer.start();
     }
 
+    // 成功曝光
     public void onADExposure() {
-        if (mViewPager.getCurrentItem() == 0) {
-            changePostion(0, 1100);
+        if (mViewPager.getCurrentItem() < mAdapter.getCount() - 1) {
+            changePostion(mViewPager.getCurrentItem(), 1100);
         }
     }
 
@@ -149,6 +151,7 @@ public class InstalCarouselDialog {
         mViewPager.setCurrentItem(0);
     }
 
+    // 设置监听
     public void setCloseListener() {
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +161,7 @@ public class InstalCarouselDialog {
         });
     }
 
+    // 销毁相关数据
     public void dismiss() {
         if (mViewPager != null && mViewPager.getChildCount() > 0) {
             mViewPager.removeAllViews();
@@ -179,10 +183,14 @@ public class InstalCarouselDialog {
     }
 
 
+    /**
+     * adapter
+     */
     public static class DialogCarouselAdapter extends PagerAdapter {
 
         List<NativeExpressADView> adList;
 
+        // 设置数据
         public void setAdList(List<NativeExpressADView> adList) {
             if (this.adList != null) {
                 for (NativeExpressADView adView : this.adList) {
@@ -204,6 +212,7 @@ public class InstalCarouselDialog {
             return view == object;
         }
 
+        // 添加数据
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             container.addView(adList.get(position));
@@ -211,11 +220,13 @@ public class InstalCarouselDialog {
             return adList.get(position);
         }
 
+        // 销毁数据
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView(adList.get(position));
         }
 
+        // 生命周期结束
         public void ondestory() {
             if (adList != null) {
                 for (NativeExpressADView adView : adList) {
