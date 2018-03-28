@@ -129,12 +129,12 @@ public class AdNativeUtils implements NativeExpressAD.NativeExpressADListener {
 
     @Override
     public void onADExposure(NativeExpressADView adView) {
-        Log.i(TAG, "onADExposure");
+        //Log.i(TAG, "onADExposure");
     }
 
     @Override
     public void onADClicked(NativeExpressADView adView) {
-        Log.i(TAG, "onADClicked");
+        //Log.i(TAG, "onADClicked");
     }
 
     @Override

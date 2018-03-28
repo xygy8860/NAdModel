@@ -87,8 +87,6 @@ public class InstalCarouselDialog {
 
     // 设置定时器 刷新
     private void changePostion(int position, int time) {
-        Log.e("123", "position:" + position);
-
         if (position > 0) {
             mViewPager.setOffscreenPageLimit(2);
         }
