@@ -38,6 +38,9 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     private boolean isShowClosedBtn;
     private int mRand = 5;
 
+    private boolean isVertical;
+    private InstalCarouselDialog mCarouselDialog;
+
     public AdInstalUtils(Activity activity, int mRand) {
         this(activity);
         this.mRand = mRand;
@@ -46,6 +49,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     public AdInstalUtils(Activity activity, String nativeId) {
         this.activity = activity;
         this.nativeId = nativeId;
+        isVertical = true;
 
         if (nativeId.equals(AdModelUtils.NativeId_Img) || nativeId.equals(AdModelUtils.NativeId_Horizontal_Img)) {
             isShowClosedBtn = true;
@@ -89,7 +93,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
                     .setAutoPlayPolicy(VideoOption.AutoPlayPolicy.ALWAYS) // 设置什么网络环境下可以自动播放视频
                     .setAutoPlayMuted(true) // 设置自动播放视频时，是否静音
                     .build()); // setVideoOption是可选的，开发者可根据需要选择是否配置
-            nativeExpressAD.loadAD(1);
+            nativeExpressAD.loadAD(isVertical ? 3 : 1);
         } catch (Exception e) {
             showGdtInshal();
         }
@@ -109,22 +113,30 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     @Override
     public void onADLoaded(List<NativeExpressADView> adList) {
         try {
-            //Log.i(TAG, "onADLoaded: " + adList.size());
-            // 释放前一个展示的NativeExpressADView的资源
-            if (nativeExpressADView != null) {
-                nativeExpressADView.destroy();
+            if (isVertical) {
+                if (mCarouselDialog == null) {
+                    mCarouselDialog = new InstalCarouselDialog(activity, isShowClosedBtn, mRand);
+                }
+                mCarouselDialog.show();
+                mCarouselDialog.setAdList(adList);
+            } else {
+                //Log.i(TAG, "onADLoaded: " + adList.size());
+                // 释放前一个展示的NativeExpressADView的资源
+                if (nativeExpressADView != null) {
+                    nativeExpressADView.destroy();
+                }
+
+                if (dialog == null) {
+                    dialog = new InstlDialog(activity, isShowClosedBtn, mRand);
+                }
+
+                dialog.show();
+
+                nativeExpressADView = adList.get(0);
+                // 广告可见才会产生曝光，否则将无法产生收益。
+                dialog.setNativeAd(nativeExpressADView);
+                nativeExpressADView.render();
             }
-
-            if (dialog == null) {
-                dialog = new InstlDialog(activity, isShowClosedBtn, mRand);
-            }
-
-            dialog.show();
-
-            nativeExpressADView = adList.get(0);
-            // 广告可见才会产生曝光，否则将无法产生收益。
-            dialog.setNativeAd(nativeExpressADView);
-            nativeExpressADView.render();
         } catch (Exception e) {
             showGdtInshal();
         }
@@ -133,30 +145,45 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     @Override
     public void onRenderFail(NativeExpressADView adView) {
         //Log.i(TAG, "onRenderFail");
-        if (dialog != null) {
-            dialog.dismiss();
+        if (!isVertical) {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            showGdtInshal();
         }
-        showGdtInshal();
     }
 
     @Override
     public void onRenderSuccess(NativeExpressADView adView) {
         //Log.i(TAG, "onRenderSuccess");
-        if (dialog != null) {
-            dialog.show();
+
+        if (!isVertical) {
+            if (dialog != null) {
+                dialog.show();
+            }
         }
     }
 
     @Override
     public void onADExposure(NativeExpressADView adView) {
         Log.i(TAG, "onADExposure");
+        if (isVertical && mCarouselDialog != null) {
+            mCarouselDialog.onADExposure();
+        }
     }
 
     @Override
     public void onADClicked(NativeExpressADView adView) {
         Log.i(TAG, "onADClicked");
-        if (dialog != null) {
-            dialog.setCloseListener();
+
+        if (isVertical) {
+            if (mCarouselDialog != null) {
+                mCarouselDialog.setCloseListener();
+            }
+        } else {
+            if (dialog != null) {
+                dialog.setCloseListener();
+            }
         }
     }
 
@@ -166,6 +193,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         // 当广告模板中的关闭按钮被点击时，广告将不再展示。NativeExpressADView也会被Destroy，释放资源，不可以再用来展示。
         if (dialog != null) {
             dialog.dismiss();
+        }
+
+        if (mCarouselDialog != null) {
+            mCarouselDialog.dismiss();
         }
     }
 
@@ -255,6 +286,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     public void ondetory() {
         if (dialog != null) {
             dialog.dismiss();
+        }
+
+        if (mCarouselDialog != null) {
+            mCarouselDialog.dismiss();
         }
 
         if (nativeExpressADView != null) {
