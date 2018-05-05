@@ -37,13 +37,13 @@ public class InstalCarouselDialog {
     private List<NativeExpressADView> adList;
     private AdInstalUtils.OnLoadAdListener listener;
 
-    public InstalCarouselDialog(Activity context, boolean isShowClosedBtn) {
+    /*public InstalCarouselDialog(Activity context, boolean isShowClosedBtn) {
         this(context, isShowClosedBtn, 0);
     }
 
     public InstalCarouselDialog(Activity context, boolean isShowClosedBtn, int mRand) {
         this(context, isShowClosedBtn, mRand, null);
-    }
+    }*/
 
     public InstalCarouselDialog(Activity context, boolean isShowClosedBtn, int mRand, AdInstalUtils.OnLoadAdListener listener) {
         this.context = context;

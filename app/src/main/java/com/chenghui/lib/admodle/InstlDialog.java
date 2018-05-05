@@ -24,13 +24,13 @@ public class InstlDialog {
     private int mRand = 5; // 点击几率
     private AdInstalUtils.OnLoadAdListener listener;
 
-    public InstlDialog(Activity context, boolean isShowClosedBtn) {
+    /*public InstlDialog(Activity context, boolean isShowClosedBtn) {
         this(context, isShowClosedBtn, 0);
     }
 
     public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand) {
         this(context, isShowClosedBtn, mRand, null);
-    }
+    }*/
 
     public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand, AdInstalUtils.OnLoadAdListener listener) {
         this.context = context;

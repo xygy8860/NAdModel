@@ -42,14 +42,19 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     private InstalCarouselDialog mCarouselDialog;
     private OnLoadAdListener listener;
 
-    public AdInstalUtils(Activity activity, int mRand) {
+    // 横屏
+    public AdInstalUtils(Activity activity, int mRand, OnLoadAdListener listener) {
         this(activity);
         this.mRand = mRand;
+        this.listener = listener;
     }
 
-    public AdInstalUtils(Activity activity, String nativeId) {
+    //竖屏
+    public AdInstalUtils(Activity activity, String nativeId, int mRand, OnLoadAdListener listener) {
         this.activity = activity;
         this.nativeId = nativeId;
+        this.listener = listener;
+        this.mRand = mRand;
         isVertical = true;
 
         if (nativeId.equals(AdModelUtils.NativeId_Img) || nativeId.equals(AdModelUtils.NativeId_Horizontal_Img)) {
@@ -57,7 +62,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         }
     }
 
-    public AdInstalUtils(Activity activity) {
+    private AdInstalUtils(Activity activity) {
         this.activity = activity;
 
         ArrayList<String> list = new ArrayList<>();
@@ -100,10 +105,6 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         }
     }
 
-    public void setOnLoadListener(OnLoadAdListener listener) {
-        this.listener = listener;
-    }
-
     @Override
     public void onNoAD(AdError adError) {
         //Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
@@ -120,7 +121,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         try {
             if (isVertical) {
                 if (mCarouselDialog == null) {
-                    mCarouselDialog = new InstalCarouselDialog(activity, isShowClosedBtn, mRand);
+                    mCarouselDialog = new InstalCarouselDialog(activity, isShowClosedBtn, mRand, listener);
                 }
                 mCarouselDialog.show();
                 mCarouselDialog.setAdList(adList);
@@ -132,7 +133,7 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
                 }
 
                 if (dialog == null) {
-                    dialog = new InstlDialog(activity, isShowClosedBtn, mRand);
+                    dialog = new InstlDialog(activity, isShowClosedBtn, mRand, listener);
                 }
 
                 dialog.show();
