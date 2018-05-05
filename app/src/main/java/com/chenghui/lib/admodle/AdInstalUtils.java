@@ -41,6 +41,8 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
     private boolean isVertical;
     private InstalCarouselDialog mCarouselDialog;
 
+    private OnLoadAdListener listener;
+
     public AdInstalUtils(Activity activity, int mRand) {
         this(activity);
         this.mRand = mRand;
@@ -99,6 +101,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         }
     }
 
+    public void setOnLoadListener(OnLoadAdListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onNoAD(AdError adError) {
         //Log.i(TAG, String.format("onNoAD, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
@@ -136,6 +142,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
                 // 广告可见才会产生曝光，否则将无法产生收益。
                 dialog.setNativeAd(nativeExpressADView);
                 nativeExpressADView.render();
+            }
+
+            if (listener != null) {
+                listener.successed();
             }
         } catch (Exception e) {
             showGdtInshal();
@@ -223,6 +233,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
             @Override
             public void onADReceive() {
                 iad.show();
+
+                if (listener != null) {
+                    listener.successed();
+                }
             }
 
             @Override
@@ -274,11 +288,17 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
             public void onAdRecieved(String s) {
                 // 请求广告成功之后，调用展示广告
                 AdViewInstlManager.getInstance(activity).showAd(activity, AdModelUtils.SDK_KEY);
+
+                if (listener != null) {
+                    listener.successed();
+                }
             }
 
             @Override
             public void onAdFailed(String s) {
-
+                if (listener != null) {
+                    listener.failed();
+                }
             }
         });
     }
@@ -295,6 +315,12 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         if (nativeExpressADView != null) {
             nativeExpressADView.destroy();
         }
+    }
+
+    public interface OnLoadAdListener {
+        void successed();
+
+        void failed();
     }
 
 }

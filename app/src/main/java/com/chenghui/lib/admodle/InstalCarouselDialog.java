@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,6 +115,7 @@ public class InstalCarouselDialog {
      * 初始化指示器
      */
     private void initLayout() {
+        mLayout.removeAllViews();
         for (int i = 0; i < mAdapter.getCount(); i++) {
             ImageView imageView = (ImageView) LayoutInflater.from(context).inflate(R.layout.admodel_carousel_fragment_img, mLayout, false);
             if (i == 0) {

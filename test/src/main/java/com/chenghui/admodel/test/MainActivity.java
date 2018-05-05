@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.hello).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adInstalUtils = new AdInstalUtils(MainActivity.this, AdModelUtils.NativeId_Img);
+                if (adInstalUtils == null) {
+                    adInstalUtils = new AdInstalUtils(MainActivity.this, AdModelUtils.NativeId_Img);
+                }
                 adInstalUtils.refreshAd(0);
             }
         });
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(adInstalUtils != null){
+        if (adInstalUtils != null) {
             adInstalUtils.ondetory();
         }
     }
