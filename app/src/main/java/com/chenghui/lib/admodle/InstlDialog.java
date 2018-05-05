@@ -22,14 +22,20 @@ public class InstlDialog {
     private RelativeLayout layout;
     private ImageView close;
     private int mRand = 5; // 点击几率
+    private AdInstalUtils.OnLoadAdListener listener;
 
     public InstlDialog(Activity context, boolean isShowClosedBtn) {
-        this(context, isShowClosedBtn, 5);
+        this(context, isShowClosedBtn, 0);
     }
 
     public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand) {
+        this(context, isShowClosedBtn, mRand, null);
+    }
+
+    public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand, AdInstalUtils.OnLoadAdListener listener) {
         this.context = context;
         this.mRand = mRand;
+        this.listener = listener;
 
         dialog = new AlertDialog.Builder(context, R.style.admodel_dialog).create();
         dialog.show();
@@ -73,6 +79,10 @@ public class InstlDialog {
         if (layout != null && layout.getChildCount() > 0) {
             layout.removeAllViews();
             layout.setVisibility(View.GONE);
+        }
+
+        if (listener != null) {
+            listener.failed();
         }
 
         dialog.dismiss();

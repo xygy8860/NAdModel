@@ -36,11 +36,10 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
 
     private String nativeId;
     private boolean isShowClosedBtn;
-    private int mRand = 5;
+    private int mRand = 0;
 
     private boolean isVertical;
     private InstalCarouselDialog mCarouselDialog;
-
     private OnLoadAdListener listener;
 
     public AdInstalUtils(Activity activity, int mRand) {
@@ -321,6 +320,8 @@ public class AdInstalUtils implements NativeExpressAD.NativeExpressADListener {
         void successed();
 
         void failed();
+
+        void closed();
     }
 
 }
