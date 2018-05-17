@@ -6,10 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.qq.e.ads.nativ.NativeExpressADView;
-
-import java.util.Random;
-
 /**
  * @author xygy
  * @version 2016-3-17 下午8:31:43
@@ -33,7 +29,7 @@ public class InstlDialog {
     }*/
 
     public InstlDialog(Activity context, boolean isShowClosedBtn, int mRand, AdInstalUtils.OnLoadAdListener listener) {
-        this.context = context;
+        /*this.context = context;
         this.mRand = mRand;
         this.listener = listener;
 
@@ -51,20 +47,9 @@ public class InstlDialog {
             if (new Random().nextInt(100) > mRand) {
                 setCloseListener();
             }
-        }
+        }*/
     }
 
-    public void setNativeAd(NativeExpressADView nativeExpressADView) {
-        if (!layout.isShown()) {
-            layout.setVisibility(View.VISIBLE);
-        }
-
-        if (layout.getChildCount() > 0) {
-            layout.removeAllViews();
-        }
-
-        layout.addView(nativeExpressADView);
-    }
 
     public void setCloseListener() {
         close.setOnClickListener(new View.OnClickListener() {

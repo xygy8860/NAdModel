@@ -2,19 +2,10 @@ package com.chenghui.lib.admodle;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import com.qq.e.ads.nativ.NativeExpressADView;
-
-import java.util.List;
-import java.util.Random;
 
 /**
  * @author xygy
@@ -29,12 +20,9 @@ public class InstalCarouselDialog {
     private LinearLayout mLayout;
     private ImageView close;
     private ViewPager mViewPager;
-    private DialogCarouselAdapter mAdapter;
-
 
     private int mRand = 0; // 点击几率
     private AdCarouselFragment.AdCountTimer timer;
-    private List<NativeExpressADView> adList;
     private AdInstalUtils.OnLoadAdListener listener;
 
     /*public InstalCarouselDialog(Activity context, boolean isShowClosedBtn) {
@@ -46,7 +34,7 @@ public class InstalCarouselDialog {
     }*/
 
     public InstalCarouselDialog(Activity context, boolean isShowClosedBtn, int mRand, AdInstalUtils.OnLoadAdListener listener) {
-        this.context = context;
+        /*this.context = context;
         this.mRand = mRand;
         this.listener = listener;
 
@@ -69,8 +57,6 @@ public class InstalCarouselDialog {
             }
         }
 
-        mAdapter = new DialogCarouselAdapter();
-        mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(0);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -87,7 +73,7 @@ public class InstalCarouselDialog {
             public void onPageScrollStateChanged(int state) {
 
             }
-        });
+        });*/
     }
 
     // 设置定时器 刷新
@@ -105,31 +91,11 @@ public class InstalCarouselDialog {
 
         timer = new AdCarouselFragment.AdCountTimer(time, time);
         timer.mViewPager = mViewPager;
-        timer.size = mAdapter.getCount();
+
         timer.position = position;
         timer.start();
     }
 
-    // 成功曝光
-    public void onADExposure() {
-        if (mViewPager.getCurrentItem() < mAdapter.getCount() - 1) {
-            changePostion(mViewPager.getCurrentItem(), 1100);
-        }
-    }
-
-    /**
-     * 初始化指示器
-     */
-    private void initLayout() {
-        mLayout.removeAllViews();
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            ImageView imageView = (ImageView) LayoutInflater.from(context).inflate(R.layout.admodel_carousel_fragment_img, mLayout, false);
-            if (i == 0) {
-                imageView.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-            }
-            mLayout.addView(imageView);
-        }
-    }
 
     private void changeIndicator(int position) {
         for (int i = 0; i < mLayout.getChildCount(); i++) {
@@ -141,18 +107,6 @@ public class InstalCarouselDialog {
                 imageView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
             }
         }
-    }
-
-    public void setAdList(List<NativeExpressADView> adList) {
-        this.adList = adList;
-        if (mAdapter == null) {
-            mAdapter = new DialogCarouselAdapter();
-        }
-
-        mAdapter.setAdList(adList);
-
-        initLayout();
-        mViewPager.setCurrentItem(0);
     }
 
     // 设置监听
@@ -171,10 +125,6 @@ public class InstalCarouselDialog {
             mViewPager.removeAllViews();
         }
 
-        if (mAdapter != null) {
-            mAdapter.ondestory();
-        }
-
         if (timer != null) {
             timer.cancel();
         }
@@ -190,59 +140,5 @@ public class InstalCarouselDialog {
         dialog.show();
     }
 
-    /**
-     * adapter
-     */
-    public static class DialogCarouselAdapter extends PagerAdapter {
-
-        List<NativeExpressADView> adList;
-
-        // 设置数据
-        public void setAdList(List<NativeExpressADView> adList) {
-            if (this.adList != null) {
-                for (NativeExpressADView adView : this.adList) {
-                    adView.destroy();
-                }
-            }
-
-            this.adList = adList;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return adList != null ? adList.size() : 0;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        // 添加数据
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(adList.get(position));
-            adList.get(position).render();
-            return adList.get(position);
-        }
-
-        // 销毁数据
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView(adList.get(position));
-        }
-
-        // 生命周期结束
-        public void ondestory() {
-            if (adList != null) {
-                for (NativeExpressADView adView : adList) {
-                    if (adView != null) {
-                        adView.destroy();
-                    }
-                }
-            }
-        }
-    }
 
 }

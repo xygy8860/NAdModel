@@ -5,22 +5,9 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.qq.e.ads.cfg.VideoOption;
-import com.qq.e.ads.nativ.ADSize;
-import com.qq.e.ads.nativ.NativeExpressAD;
-import com.qq.e.ads.nativ.NativeExpressADView;
-import com.qq.e.ads.splash.SplashAD;
-import com.qq.e.ads.splash.SplashADListener;
-import com.qq.e.comm.util.AdError;
-
-import java.util.List;
 
 /**
  * Created by cdsunqinwei on 2018/3/20.
@@ -33,16 +20,6 @@ public abstract class SplashBaseActivity extends Activity {
 
     protected ViewGroup splashLayout; // 必须在子类赋值
     protected TextView mJumpBtn; // 必须在子类赋值
-
-    // 测试id
-//    protected String appId = "1106414865";
-//    protected String splashID = "4050220679022649";
-//    protected String nativeId = "5080737128844271";
-//    protected int mRand = 95; // 控制点击几率
-//    protected boolean isSplashFirst = true; // true:开屏优先  false:原生优先
-
-    private NativeExpressADView nativeExpressADView;
-    private NativeExpressAD nativeExpressAD;
 
     private Handler handler;
     private TimeRunnable timeRunnable;
@@ -57,12 +34,8 @@ public abstract class SplashBaseActivity extends Activity {
     /**
      * 初始化参数
      */
-    protected void initAdParams(){
-        if (AdModelUtils.isSplashFirst) {
-            QQKaiping(0);
-        } else {
-            refreshAd(0);
-        }
+    protected void initAdParams() {
+        splash();
     }
 
     @Override
@@ -89,11 +62,6 @@ public abstract class SplashBaseActivity extends Activity {
             splashLayout = null;
         }
 
-        // 使用完了每一个NativeExpressADView之后都要释放掉资源
-        if (nativeExpressADView != null) {
-            nativeExpressADView.destroy();
-        }
-
         if (handler != null) {
             if (timeRunnable != null) {
                 handler.removeCallbacks(timeRunnable);
@@ -117,56 +85,6 @@ public abstract class SplashBaseActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * 开屏
-     *
-     * @param count
-     */
-    private void QQKaiping(final int count) {
-        mJumpBtn.setVisibility(View.VISIBLE);
-        SplashAD splashAD = new SplashAD(this, splashLayout, mJumpBtn,
-                AdModelUtils.APPID, AdModelUtils.SplashID, new SplashADListener() {
-            @Override
-            public void onADDismissed() {
-                next();
-            }
-
-            @Override
-            public void onNoAD(AdError adError) {
-                String err = adError.getErrorMsg();
-                if (!TextUtils.isEmpty(err) && err.contains("网络类型错误")) {
-                    if (AdModelUtils.isSplashFirst) { // 如果是开屏优先，则无数据请求原生
-                        refreshAd(0);
-                    } else { // 如果是原生优先，开屏无数据则跳转主页
-                        next();
-                    }
-                } else if (count < 2) {
-                    QQKaiping(count + 1);
-                } else {
-                    if (AdModelUtils.isSplashFirst) { // 如果是开屏优先，则无数据请求原生
-                        refreshAd(0);
-                    } else { // 如果是原生优先，开屏无数据则跳转主页
-                        next();
-                    }
-                }
-            }
-
-            @Override
-            public void onADPresent() {
-                mJumpBtn.setBackgroundResource(R.drawable.admodel_bg_splash);
-            }
-
-            @Override
-            public void onADClicked() {
-
-            }
-
-            @Override
-            public void onADTick(long l) {
-                mJumpBtn.setText(" " + Math.round(l / 1000) + "跳过 ");
-            }
-        }, 0);
-    }
 
     protected void splash() {
         new Thread(new Runnable() {
@@ -187,146 +105,6 @@ public abstract class SplashBaseActivity extends Activity {
             openMainActivity();
         } else {
             canJump = true;
-        }
-    }
-
-
-    private void refreshAd(final int count) {
-
-        if (count == 0) {
-            if (handler == null) {
-                handler = new Handler();
-            }
-
-            if (timeOutRunnable == null) {
-                timeOutRunnable = new TimeOutRunnable();
-            }
-
-            handler.postDelayed(timeOutRunnable, 4000);
-        }
-
-        try {
-            /**
-             *  如果选择支持视频的模版样式，请使用{@link Constants#NativeExpressSupportVideoPosID}
-             */
-            nativeExpressAD = new NativeExpressAD(this, new ADSize(ADSize.FULL_WIDTH, ADSize.AUTO_HEIGHT), AdModelUtils.APPID,
-                    AdModelUtils.NativeId_Img, new NativeExpressAD.NativeExpressADListener() {
-                @Override
-                public void onNoAD(AdError adError) {
-                    try {
-                        if (count < 3) {
-                            refreshAd(count + 1);
-                        } else {
-                            if (!AdModelUtils.isSplashFirst) {
-                                QQKaiping(0);
-                            } else {
-                                next();
-                            }
-                        }
-                    } catch (Exception e) {
-
-                    }
-                }
-
-                @Override
-                public void onADLoaded(List<NativeExpressADView> adList) {
-                    try {
-                        // 释放前一个展示的NativeExpressADView的资源
-                        if (nativeExpressADView != null) {
-                            nativeExpressADView.destroy();
-                        }
-
-                        if (splashLayout.getVisibility() != View.VISIBLE) {
-                            splashLayout.setVisibility(View.VISIBLE);
-                        }
-
-                        if (splashLayout.getChildCount() > 0) {
-                            splashLayout.removeAllViews();
-                        }
-
-                        nativeExpressADView = adList.get(0);
-                        // 广告可见才会产生曝光，否则将无法产生收益。
-                        splashLayout.addView(nativeExpressADView);
-                        nativeExpressADView.render();
-                    } catch (Exception e) {
-                        //next();
-                    }
-                }
-
-                @Override
-                public void onRenderFail(NativeExpressADView adView) {
-                    if (!AdModelUtils.isSplashFirst) {
-                        QQKaiping(0);
-                    } else {
-                        splash();
-                    }
-                }
-
-                @Override
-                public void onRenderSuccess(NativeExpressADView adView) {
-                    if (handler == null) {
-                        handler = new Handler();
-                    }
-
-                    if (timeOutRunnable != null) {
-                        handler.removeCallbacks(timeOutRunnable);
-                    }
-
-                    timeRunnable = new TimeRunnable();
-                    handler.postDelayed(timeRunnable, 10);
-                    mJumpBtn.setVisibility(View.VISIBLE);
-
-                    int random = (int) (Math.random() * 100);
-                    if (random < AdModelUtils.mRand) {
-                        mJumpBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                next();
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onADExposure(NativeExpressADView adView) {
-                    Log.i(TAG, "onADExposure");
-                }
-
-                @Override
-                public void onADClicked(NativeExpressADView adView) {
-                    Log.i(TAG, "onADClicked");
-                }
-
-                @Override
-                public void onADClosed(NativeExpressADView adView) {
-                    // 当广告模板中的关闭按钮被点击时，广告将不再展示。NativeExpressADView也会被Destroy，释放资源，不可以再用来展示。
-                    if (splashLayout != null && splashLayout.getChildCount() > 0) {
-                        splashLayout.removeAllViews();
-                        splashLayout.setVisibility(View.GONE);
-                    }
-                    //next();
-                }
-
-                @Override
-                public void onADLeftApplication(NativeExpressADView adView) {
-                }
-
-                @Override
-                public void onADOpenOverlay(NativeExpressADView adView) {
-                }
-
-                @Override
-                public void onADCloseOverlay(NativeExpressADView adView) {
-                }
-
-            }); // 这里的Context必须为Activity
-            nativeExpressAD.setVideoOption(new VideoOption.Builder()
-                    .setAutoPlayPolicy(VideoOption.AutoPlayPolicy.WIFI) // 设置什么网络环境下可以自动播放视频
-                    .setAutoPlayMuted(true) // 设置自动播放视频时，是否静音
-                    .build()); // setVideoOption是可选的，开发者可根据需要选择是否配置
-            nativeExpressAD.loadAD(1);
-        } catch (Exception e) {
-            next();
         }
     }
 
