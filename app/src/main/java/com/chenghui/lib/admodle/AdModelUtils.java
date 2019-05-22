@@ -1,12 +1,20 @@
 package com.chenghui.lib.admodle;
 
+import android.content.Context;
+
 /**
  * Created by cdsunqinwei on 2018/3/21.
  */
 
 public class AdModelUtils {
+
+    public static void initTTAd(Context context) {
+
+    }
+
     // 横幅广告控制几率 默认百度100%
     public static int BD_Banner_rate = 100;
+    public static int TT_Banner_rate = 0;
     public static int GDT_Banner_rate = 0;
 
     // 开屏广告控制几率 默认头条100%
